@@ -2,7 +2,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-from .serializers import  PostSerializers,CommentSerializer
+from .serializers import  PostSerializers,CommentSerializer,Get_commentSerializers
 from .models import Post,Comment
 # from blog.utils.utils import convert_date
 
@@ -111,7 +111,7 @@ class week(APIView):
             print(e)
             return Response({"message": "something went wrong"}, status=status.HTTP_400_BAD_REQUEST)
 
-##################################### Comment on other's post ###########################################
+##################################### Comment on other's post(blog) ###########################################
 
 class Post_Comment(APIView):
     permission_classes = [IsAuthenticated,]
@@ -123,11 +123,26 @@ class Post_Comment(APIView):
             except Exception as e:
                 return Response({"message": "post doesn't exist"}, status=status.HTTP_400_BAD_REQUEST)
 
-
             serializer=CommentSerializer(data=request.data,partial=True)
             if serializer.is_valid(raise_exception=True):
                 serializer.save(user=request.user)
                 return Response({"message":"comment successfull"},status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"message": "something went wrong"}, status=status.HTTP_400_BAD_REQUEST)
+
+###################### list of user blog's with comments #############################
+
+class Detail(APIView):
+    def get(self, request):
+        try:
+            user = request.user
+            get_post = Post.objects.filter(user=user)
+            serializer = Get_commentSerializers(get_post, many=True)
+            return Response({"message": "user data with comments", "data": serializer.data}, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({"message": "something went wrong"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
 

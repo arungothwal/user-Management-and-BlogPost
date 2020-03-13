@@ -14,5 +14,6 @@ urlpatterns = [
     url(r'^user_post',Filter_Post.as_view()),
     url(r'^week',week.as_view()),
     url(r'^comment',Post_Comment.as_view()),
+    url(r'^detail',Detail.as_view()),
 
 ]
